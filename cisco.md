@@ -57,13 +57,24 @@ configure terminal / conf t
 
 Lorsque le switch est configuré correctement, afin de ne pas perdre ses paramètres au prochain démarrage, il est possible de sauvegarder la config pour qu'elle soit prise en compte à chaque démarrage.
 
+Avant de faire la sauvegarde, voici les commandes qui permettent d'afficher quelques informations sur la configuration de l'appareil.
+
+```
+Switch# show ip interface brief
+Switch# show ipv6 interface brief
+```
+
+```
+Switch# show vlan brief
+```
+
 ```
 Switch# copy running-config startup-config
 ```
 
 ## Accès sécurisé
 
-Afin de limiter de limiter les accès au différent modes et à distance, il est fortement recommandé de configurer un mot de passe.
+Afin de limiter de limiter les accès aux différents modes et à distance, il est fortement recommandé de configurer un mot de passe.
 
 ### Mode privilégié
 
@@ -73,9 +84,10 @@ Switch(Config)# enable secret <password>
 
 ### SSH
 
-Dans la plupart des cas, il sera constaté que pour l'accès ssh toutes les lignes virtuelles de 0 à 15 seront dédié au protocole ssh pour des mesures de sécurité afin d'empêcher le telnet
+Dans la plupart des cas, il sera constaté que pour l'accès ssh toutes les lignes virtuelles de 0 à 15 seront dédiées au protocole ssh pour des mesures de sécurité afin d'empêcher l'accès en telnet.
 
 ```
+Switch# show ip ssh
 Switch(config)# ip domain-name <domain-name>
 Switch(config)# ip ssh version 2
 Switch(config)# crypto key generate rsa
@@ -93,12 +105,27 @@ Par défaut les switchs cisco ont un vlan 1 déjà configuré sur lequel tous le
 
 Pour créer un vlan et le configurer voici les commandes:
 
+### Création
+
 ```
 Switch(config)# vlan <number>
 Switch(config-vlan)# name <name>
 Switch(config-vlan)# exit
+```
+
+### Mode access
+
+```
 Switch(config)# int <int number>
-Switch(config)# switchport mode <trunk><access>
-Switch(config)# switchport access vlan <number>
+Switch(config)# switchport mode access
+Switch(config)# switchport access vlan <number> (plusieurs sont possible)
+```
+
+### Mode trunk
+
+```
+Switch(config)# int <number>
+Switch(config-if)# switchport mode trunk
+Switch(config-if)# switchport trunk allowed vlan <number> (plusieurs sont possible)
 ```
 
