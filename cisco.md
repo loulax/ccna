@@ -11,20 +11,20 @@ Elle permet d'affiche la liste des commandes accessibles dans le mode actuel ave
 - **Exécution utilisateur** : Ce mode offre des fonctionnalités limitées mais utile pour les opérations de base. Il autorise seulement un nombre de commandes limitées pour la surveillance de base mais aucune susceptible de modifier la configuration du périphérique. Ce mode est reconnu par le symbole **>** qui termine le prompt.
 - **Exécution privilégié / actif** : Ce mode est utile pour les administrateurs réseau. Il permet d'accéder à des configurations avancées pour modifier certains paramètres. Il est reconnu par le symbole **#** qui termine le prompt. Pour accéder à ce mode, saisir la commande suivante.
 
-```
+```php
 switch> enable
 switch#
 ```
 
 - **Configuration de ligne** : Utilisé pour l'accès par la console, ssh, telnet ou AUX. L'invite par défaut pour le mode de configuration de ligne est **Switch(config-line)#**.
 
-```
+```php
 switch(config)# line console <numero>
 ```
 
 - **Configuration d'interface** : Utilisé pour configurer l'interface réseau d'un port (ou plusieurs ports) d'un switch ou d'un routeur. Le prompt par défaut est **Switch(config-if)#**. 
 
-```
+```php
 switch(config)# interface <type><number>
 - Ex : int Fa0/1
 - int g0/1
@@ -37,19 +37,19 @@ switch(config-if-range)#
 
 Afin de pouvoir accéder au mode privilégié de la console, il faut saisir la commande suivante. Dans certains cas, un mot de passe est nécessaire.
 
-```
+```ABAP
 enable / en
 ```
 
 Pour repasser au mode utilisateur
 
-```
+```ABAP
 disable
 ```
 
 Pour passer en mode configuration globale .
 
-```
+```ABAP
 configure terminal / conf t
 ```
 
@@ -59,7 +59,7 @@ Lorsque le switch est configuré correctement, afin de ne pas perdre ses paramè
 
 Avant de faire la sauvegarde, voici les commandes qui permettent d'afficher quelques informations sur la configuration de l'appareil.
 
-```
+```php
 Switch# show ip interface brief
 Switch# show ipv6 interface brief
 ```
@@ -68,7 +68,20 @@ Switch# show ipv6 interface brief
 Switch# show vlan brief
 ```
 
+Il est possible de filtrer les résultats via les mots clé **include**, **exclude**, **begin**, **section**. Comme un **grep** sous linux.
+
+Ex :
+
+```php
+show  ip interface brief | include up
+routerCG#show ip int brief | include up
+GigabitEthernet0/0     192.168.10.1    YES manual up                    up 
+Serial0/1/0            10.0.0.1        YES manual up                    up 
 ```
+
+
+
+```php
 Switch# copy running-config startup-config
 ```
 
@@ -78,7 +91,7 @@ Afin de limiter de limiter les accès aux différents modes et à distance, il e
 
 ### Mode privilégié
 
-```
+```php
 Switch(Config)# enable secret <password>
 ```
 
@@ -86,7 +99,7 @@ Switch(Config)# enable secret <password>
 
 Dans la plupart des cas, il sera constaté que pour l'accès ssh toutes les lignes virtuelles de 0 à 15 seront dédiées au protocole ssh pour des mesures de sécurité afin d'empêcher l'accès en telnet.
 
-```
+```bash
 Switch# show ip ssh
 Switch(config)# ip domain-name <domain-name>
 Switch(config)# ip ssh version 2
@@ -107,7 +120,7 @@ Pour créer un vlan et le configurer voici les commandes:
 
 ### Création
 
-```
+```php
 Switch(config)# vlan <number>
 Switch(config-vlan)# name <name>
 Switch(config-vlan)# exit
@@ -115,7 +128,7 @@ Switch(config-vlan)# exit
 
 ### Mode access
 
-```
+```bash
 Switch(config)# int <int number>
 Switch(config)# switchport mode access
 Switch(config)# switchport access vlan <number> (plusieurs sont possible)
@@ -123,9 +136,29 @@ Switch(config)# switchport access vlan <number> (plusieurs sont possible)
 
 ### Mode trunk
 
-```
+```bash
 Switch(config)# int <number>
 Switch(config-if)# switchport mode trunk
 Switch(config-if)# switchport trunk allowed vlan <number> (plusieurs sont possible)
+```
+
+## Routeur
+
+### Config interface
+
+Pour configurer une interface réseau
+
+```bash
+Router(config)# int <number>
+Router(config-if)# ip address <ip> <subnet mask>
+router(config-if)# no shutdown
+```
+
+### Route
+
+Pour configurer des routes voici la procédure
+
+```bash
+Router(config)# ip route <network> <mask> <remote link>
 ```
 
