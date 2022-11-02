@@ -53,6 +53,23 @@ Pour passer en mode configuration globale .
 configure terminal / conf t
 ```
 
+### Résolution DNS
+
+Parfois lorsqu'une commande est mal saisie, le switch ou le routeur va faire de la recherche dns pour vérifier si la commande existe, mais la procédure peut mettre du temps ce qui est pénible puisque le terminal durant l'opération est figé.... Pour éviter ça, il est possible de désactiver la recherche dns ainsi :
+
+```
+Routeur/Switch> en
+Routeur/Switch#> conf t
+Routeur/Switch(config)#>no ip domain-lookup
+```
+
+On peut aussi le faire pour les lignes distantes
+
+```php
+Routeur(config)# line vty 0 15
+Routeur(config-line)# no ip domain-lookup
+```
+
 ## Sauvegarde
 
 Lorsque le switch est configuré correctement, afin de ne pas perdre ses paramètres au prochain démarrage, il est possible de sauvegarder la config pour qu'elle soit prise en compte à chaque démarrage.
@@ -161,4 +178,38 @@ Pour configurer des routes voici la procédure
 ```bash
 Router(config)# ip route <network> <mask> <remote link>
 ```
+
+## OSPF
+
+Le protocole OSPF (Open Shortest Path Fist) est un protocole de routage dynamique, qui fait partie de la famille des protocoles de routage à état de lien.
+
+Il existe 3 familles:
+
+|           | Vecteur de distance | Etat de lien            | Vecteur de chemin |
+| --------- | ------------------- | ----------------------- | ----------------- |
+| Classfull | IGRP                |                         | EGP               |
+| Classless | EIGRP               | OSPFv2   IS-IS          | BGPv4             |
+| IPv6      | EIGRP for IPv6      | OSPFv3   IS-IS for IPv6 | BGPv4 for IPv6    |
+
+### Routage OSPF
+
+```php
+# La commande suivante permet d'activer OSPF
+Router(config) # router ospf 1
+# Il faut maintenant renseigner les adresses réseau de chaque IF du routeur 
+Routeur(config-router)# network <network id> <subnet mask> area <number>
+```
+
+Pour afficher la configuration :
+
+```
+Routeur# show ip protocols
+.........
+Routeur# show ip ospf neighbor
+```
+
+| type         | commande              | Résumé                                                 |
+| ------------ | --------------------- | ------------------------------------------------------ |
+| routage ospf | show ip protocols     | affiche des infos sur les protocoles actifs du routeur |
+| routage ospf | show ip ospf neighbor | affiche les routeurs ospf voisin                       |
 
