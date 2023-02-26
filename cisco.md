@@ -1,5 +1,7 @@
 # Packet Tracer
 
+
+
 ## Console
 
 Accéder à la liste d'aide, saisir la commande **help** . Celle-ci est accessible dans tous les modes d'exécution.
@@ -22,6 +24,14 @@ switch#
 switch(config)# line console <numero>
 ```
 
+- Configuration du mot de passe pour accéder au mode privilégié
+
+```
+switch(config)# enable secret <password>
+```
+
+Il est bien entendu possible de mettre un mot de passe en clair en remplacant "secret" par "password" mais pour des questions de sécurité, il est fortement conseillé de chiffrer le mot de passe pour éviter de le voir en clair dans le fichier de configuration de l'équipement.
+
 - **Configuration d'interface** : Utilisé pour configurer l'interface réseau d'un port (ou plusieurs ports) d'un switch ou d'un routeur. Le prompt par défaut est **Switch(config-if)#**. 
 
 ```php
@@ -32,6 +42,24 @@ switch(config)# interface <type><number>
 switch(config-if)#
 switch(config-if-range)#
 ```
+
+### Configuration / Noyau
+
+Les paramètres de l'iOS se trouvent dans le fichier startup-config qui est chargé au démarrage de l'équipement. Lorsque ce dernier redémarre, toutes les configurations apportées à celui-ci sont effacé car les paramètres d'usines sont toujours pris en compte.
+
+Afin de pouvoir sauvegarder ses paramètres et ainsi permettre un redémarrage de ce dernier sans tout perdre, il va falloir écraser la configuration d'usine par celle actuelle. Pour ça :
+
+```
+switch# copy running-config startup-config
+```
+
+Et bien sûr, si l'on veut revenir aux paramètres d'usine:
+
+```
+switch# erase startup-config
+```
+
+
 
 ### Accès mode privilégié
 
