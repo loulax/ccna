@@ -1,4 +1,4 @@
-# Domaine de collision
+## Domaine de collision
 
 
 
@@ -13,7 +13,7 @@ Le switch a était conçu pour limiter ces inconvénients en faisant en communiq
 
 
 
-# Routage inter-réseau
+## Routage inter-réseau
 
 
 
@@ -23,6 +23,10 @@ Le switch a était conçu pour limiter ces inconvénients en faisant en communiq
 - Filtrage
 - Routage
 - Choix du meilleur chemin
+
+
+
+## Périphériques administrables
 
 ### <u>WLAN</u>
 
@@ -40,4 +44,3 @@ Le switch a était conçu pour limiter ces inconvénients en faisant en communiq
 - IDS/IPS
 - ASA/Firepower
 - NGFW (Next Generation Firewall)
-
