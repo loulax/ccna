@@ -93,3 +93,54 @@ Branchement d'un câble GigabitEthernet avec 4 pairs
 
 ![](/Users/loulax/Documents/GitHub/ccna/chap2/img/Croisement-GE.png)
 
+
+
+
+
+
+
+
+
+### Les normes Ethernet pour la fibre optique
+
+Les 2 types:
+
+- Fibre monomode:
+  - Laser
+  - Hauts débits
+  - Longues distances
+  - Utilisé pour l'interconnexion entre villes / pays / continents
+- Fibre multimode
+  - Led
+  - moins cher 
+  - Débit/Distance moins élevé
+  - Utilisé dans des petits réseaux
+
+
+
+Les normes :
+
+- 100Base-FX 802.3u: multimode/412m
+- 1000Base-SX 802.3z: multimode/220m/550m
+- 1000Base-LX 802.3z: monomode/10km
+- 1000Base-ZX Cisco: monomode/70km
+
+Pour interconnecter chaque extrémité d'une fibre monomode, on utilise des modules de type SFP/SFP+
+
+==>  [Carte du globe avec les câbles sous-marin qui relient les continents](https://submarine-cable-map-2023.telegeography.com/)
+
+
+
+
+
+
+
+#### Les notions à connaître pour l'examen
+
+- Décrire le mécanisme de CSMA/CD
+- Comprendre les différentes parties de l'adresse MAC
+- Maîtriser la conversion binaire/décimale/hexadécimale
+- Identifier les différents champs Ethernet
+- Connaître les nromes de câblage Ethernet filaire/fibre
+- Types de câbles
+
