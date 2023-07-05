@@ -91,7 +91,7 @@ Branchement d'un câble croisé FastEthernet avec 2 pairs
 
 Branchement d'un câble GigabitEthernet avec 4 pairs 
 
-![](/Users/loulax/Documents/GitHub/ccna/chap2/img/Croisement-GE.png)
+![](img/Croisement-GE.png)
 
 
 
