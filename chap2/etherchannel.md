@@ -72,8 +72,9 @@ Group  Port-channel  Protocol    Ports
 ```
 
 **Attention de bien configurer à l'identique sur chaque liens sinon ça ne fonctionnera pas!**
+Il faut bien vérifier Po1(SU), c'est cet indicateur qui permettra de s'assurer que le lien est bien monté et actif.
 
-Pour voir le status des interfaces active :
+Pour voir le status des interfaces actives :
 
 ```
 sh int status
