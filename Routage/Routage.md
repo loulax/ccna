@@ -50,7 +50,7 @@ Le prérequis pour que BGP fonctionne par la suite, c'est que chaque routeurs qu
 
 Dans cet exemple, j'ai configuré seulement Paris et Moscou avec un tunnel BGP pour qu'ils puissent se joindre directement.
 
-![](/home/loulax/Desktop/github/ccna/Routage/img/EBGP.png)
+![](img/EBGP.png)
 
 Etape 1: Configurer une interface loopback sur Paris. Comme adresse de loopback j'ai repris l'id du routeur configuré dans ospf 4444 puisque l'AS de paris est 400. Il est évidemment possible de mettre absolument ce que l'ont veut.
 
@@ -182,7 +182,7 @@ R1# clear ip ospf processus
 
 Voici à quoi ressemble sur wireshark les communications OSPF
 
-![](../img\ws-ospf-discover.png)
+![](img\ws-ospf-discover.png)
 
 Pour afficher la table de routage OSPF
 
