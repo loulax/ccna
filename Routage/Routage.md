@@ -182,7 +182,7 @@ R1# clear ip ospf processus
 
 Voici à quoi ressemble sur wireshark les communications OSPF
 
-![](img\ws-ospf-discover.png)
+![](img/ws-ospf-discover.png)
 
 Pour afficher la table de routage OSPF
 
@@ -207,7 +207,7 @@ O        10.10.3.0/30 [110/2] via 10.10.2.2, 00:04:29, GigabitEthernet0/0
 
 PETIT RAPPEL SUR LE WILDCARD, ici le masque est en /24
 
-![](img\wildcard.png)
+![](img/wildcard.png)
 
 
 
