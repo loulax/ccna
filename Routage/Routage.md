@@ -115,8 +115,6 @@ Lorsque un routeur est configuré dans 2 zones ou plus, il est appelé **ABR**(A
 
 Si un routeur est configuré dans plus d'un domaine de routage avec d'autres protocoles, il est appelé **ASBR**(Autonomous System Border Routers)
 
-
-
 ### Mise en place
 
 Pour configurer le routage OSPF sur un routeur ou switch backbone (niveau 3), il va falloir d'abord configurer manuellement chacune des interfaces de l'équipement en statique. Puis activer l'ospf comme ceci:
@@ -209,7 +207,55 @@ PETIT RAPPEL SUR LE WILDCARD, ici le masque est en /24
 
 ![](img/wildcard.png)
 
+### Elections
 
+L'élection est un processus permettant de choisir dans un réseau multi-point lequel routeur sera prioritaire pour acheminer le paquet à la destination. Il y a pour ça 2 types :
+
+DR : Designated routeur (le routeur désigné)
+
+BDR : Backup Designated Routeur
+
+L'élection des DR / BDR se fait par 2 critères : 
+
+- La priorité (défault : 1)
+- Le routeur ID (Si celui-ci n'est pas configuré dans OSPF il prendra l'adresse ip la plus élevé sur les loopback sinon celle des interfaces physique)
+
+Si la priorité est égale sur tous les routeurs voisins, ce sera l'ID qui sera utilisé pour l'élection.
+
+Remarque : Chaque routeur s'envoi des paquets hello à intervalle 10s par défaut. Il est possible de rallonger ou raccourcir ce timer mais il faut que la valeur soit identique sur tous les routeurs voisins autrement le dead-interval va corrompre la table de voisinage. 
+
+<u>Son adresse multicast permettant d'envoyer une ou plusieurs informations à son segment est 224.0.0.5.</u>
+
+### Security
+
+OSPF permet de faire de l'authentification pour empêcher qu'un routeur inconnu vienne s'ajouter au réseau et puisse en perturber son infra.
+
+Il est possible de faire de l'authentification par zone et différentes méthodes sont disponibles:
+
+- Plain text
+- MD5
+- SHA-1, SHA-256, SHA-512
+
+<u>Configuration SHA:</u>
+
+Passer en mode config global puis saisir les commandes suivantes:
+
+```
+R1(config)# key chain 1
+R1(config-keychain)# key 1
+R1(config-keychain-key)# key-string <plain text password>
+R1(config-keychain-key) cryptographic-algorithm hmac-sha-512
+R1(config-keychain-key) end
+```
+
+Passer en mode de configuration interface sur celles correspondantes à la zone à configurer puis saisir les commandes suivantes:
+
+```
+R1(config-if)# ip ospf authentication
+R1(config-if)# ip ospf authentication key-chain 1
+```
+
+Comme dit plus haut, il faudra le faire pour toutes les interfaces voisines correspondant à la même zone. Il est possible de faire la même configuration pour toutes les zones configurées sur ce dernier, auquel cas il faudra adapter les interfaces.
 
 ## Protocole RIP
 
