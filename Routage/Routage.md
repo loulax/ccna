@@ -103,6 +103,12 @@ Moscou(config-router)#neighbor 4.4.4.4 ebgp-multihop 4
 
 ## Protocole OSPF
 
+Multicast Address : 224.0.0.5 / 224.0.0.6
+
+Port : 89 (TCP)
+
+Hello Time : 10s (Default)
+
 
 
 ### Introduction
@@ -119,7 +125,7 @@ Si un routeur est configuré dans plus d'un domaine de routage avec d'autres pro
 
 Pour configurer le routage OSPF sur un routeur ou switch backbone (niveau 3), il va falloir d'abord configurer manuellement chacune des interfaces de l'équipement en statique. Puis activer l'ospf comme ceci:
 
-```
+```python
 R1(config)# router opsf 1 (On active le routage en spécifiant l'id du processus, ce numéro est totalement aléatoire)
 R1(config-router)# router-id 1.1.1.1 (on spécifie l'id du routeur)
 ```
@@ -150,7 +156,7 @@ Neighbor ID     Pri   State           Dead Time   Address         Interface
 2.2.2.2           1   FULL/BDR        00:00:35    10.10.1.2       GigabitEthernet0/1
 ```
 
-Lorsque le protocole détexte ses voisins, il doit les stockers dans une base de donnée nommée (LSDB: link state database). Les infos reçu par OSPF s'appellent des LSA (Link State Advertisment)
+Lorsque le protocole détecte ses voisins, il doit les stockers dans une base de donnée nommée (LSDB: link state database). Les infos reçu par OSPF s'appellent des LSA (Link State Advertisment)
 
 ```
 R1#show ip ospf database
@@ -203,60 +209,159 @@ O        10.10.3.0/30 [110/2] via 10.10.2.2, 00:04:29, GigabitEthernet0/0
                       [110/2] via 10.10.1.2, 00:04:29, GigabitEthernet0/1
 ```
 
-PETIT RAPPEL SUR LE WILDCARD, ici le masque est en /24
+<u>PETIT RAPPEL SUR LE WILDCARD, ici le masque est en /24</u>
 
 ![](img/wildcard.png)
 
-### Elections
 
-L'élection est un processus permettant de choisir dans un réseau multi-point lequel routeur sera prioritaire pour acheminer le paquet à la destination. Il y a pour ça 2 types :
-
-DR : Designated routeur (le routeur désigné)
-
-BDR : Backup Designated Routeur
-
-L'élection des DR / BDR se fait par 2 critères : 
-
-- La priorité (défault : 1)
-- Le routeur ID (Si celui-ci n'est pas configuré dans OSPF il prendra l'adresse ip la plus élevé sur les loopback sinon celle des interfaces physique)
-
-Si la priorité est égale sur tous les routeurs voisins, ce sera l'ID qui sera utilisé pour l'élection.
-
-Remarque : Chaque routeur s'envoi des paquets hello à intervalle 10s par défaut. Il est possible de rallonger ou raccourcir ce timer mais il faut que la valeur soit identique sur tous les routeurs voisins autrement le dead-interval va corrompre la table de voisinage. 
-
-<u>Son adresse multicast permettant d'envoyer une ou plusieurs informations à son segment est 224.0.0.5.</u>
-
-### Security
-
-OSPF permet de faire de l'authentification pour empêcher qu'un routeur inconnu vienne s'ajouter au réseau et puisse en perturber son infra.
-
-Il est possible de faire de l'authentification par zone et différentes méthodes sont disponibles:
-
-- Plain text
-- MD5
-- SHA-1, SHA-256, SHA-512
-
-<u>Configuration SHA:</u>
-
-Passer en mode config global puis saisir les commandes suivantes:
-
-```
-R1(config)# key chain 1
-R1(config-keychain)# key 1
-R1(config-keychain-key)# key-string <plain text password>
-R1(config-keychain-key) cryptographic-algorithm hmac-sha-512
-R1(config-keychain-key) end
-```
-
-Passer en mode de configuration interface sur celles correspondantes à la zone à configurer puis saisir les commandes suivantes:
-
-```
-R1(config-if)# ip ospf authentication
-R1(config-if)# ip ospf authentication key-chain 1
-```
-
-Comme dit plus haut, il faudra le faire pour toutes les interfaces voisines correspondant à la même zone. Il est possible de faire la même configuration pour toutes les zones configurées sur ce dernier, auquel cas il faudra adapter les interfaces.
 
 ## Protocole RIP
 
+BROADCAST ADDRESS : **224.0.0.9**
+
+PORT: **UDP 520**
+
+Update Time : 30s (default)
+
 ## Protocole EIGRP
+
+BROADCAST ADDRESS: 224.0.0.10
+
+PORT: 
+
+Internal Administrative Distance : 90
+
+External Administrative Distance : 170
+
+Enhanced Interior Gateway Routing Protocol est un protocol propriétaire Cisco. C'est un protocol de routage à vecteur de distance, il utilise l'algorithme DUAL (Diffusing Update Algorithme) comme "Loop Free Routing". Toutes les 15 secondes, le protocole envoit à l'adresse multicast 224.0.0.10 un paquet hello pour détecter ses voisins eigrp et s'assurer que ceux qui sont connus soit toujours actifs, on appelle ça le hello-time. Une fois qu'il reçoit un autre paquet hello quand le protocole est activé sur le voisin, il va recevoir un paquet update pour mettre à jour sa table de routage.
+
+### Configuration
+
+Pour établir la relation de voisinage EIGRP, il faut configurer les interfaces de chaque routeurs puis rentrer dans le processus eigrp pour ajouter les réseaux de chaque interfaces:
+
+![](img/eigrp_topology.png)
+
+R1 : G6/0 -> 192.168.1.1/24 
+	G7/0 -> 20.0.0.2/30	
+	G8/0 -> 10.0.0.1/30
+
+R2: G6/0 -> 192.168.2.1/30
+	G7/0 -> 10.0.0.2/30
+	G8/0 -> 30.0.0.1/30
+
+R3: G6/0 -> 192.168.3.1/24
+	G7/0 -> 40.0.0.1/30
+	G8/0 -> 30.0.0.2/30
+
+R4: G6/0 -> 192.168.4.0/24
+	G7/0 -> 20.0.0.1/30
+	G8/0 -> 40.0.0.2/30
+
+```
+R1(config)# router eigrp 100
+R1(config-router)#network 192.168.1.0
+R1(config-router)#network 10.0.0.0
+R1(config-router)#network 40.0.0.0
+```
+
+Il peut-être utile de désactiver l'auto-summary comme ceci :
+
+```
+R1(config-router)# no auto-summary
+```
+
+Cette fonctionnalité permet d'alléger les tables de routages en créant un préfix des réseaux connus par le protocole mais par conséquent peux masquer des informations détaillés sur les routes eigrp
+
+La capture suivante affiche les communications d'eigrp avec un paquet "Hello" qui permet d'initier la détection des voisins ensuite un paquet update pour mettre à jour sa table de routage et l'acquittement pour "accusé de réception" aux voisins.
+
+![](img/wireshark_eigrp.png)
+
+Pour voir la topology saisir la commande suivante :
+
+```
+R1#show ip eigrp topology
+IP-EIGRP Topology Table for AS 100/ID(192.168.1.1)
+
+Codes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,
+       r - Reply status
+
+P 10.0.0.0/30, 1 successors, FD is 2816
+         via Connected, GigabitEthernet8/0
+P 20.0.0.0/30, 1 successors, FD is 2816
+         via Connected, GigabitEthernet7/0
+P 30.0.0.0/30, 1 successors, FD is 3072
+         via 10.0.0.2 (3072/2816), GigabitEthernet8/0
+P 40.0.0.0/30, 1 successors, FD is 3072
+         via 20.0.0.2 (3072/2816), GigabitEthernet7/0
+P 192.168.1.0/24, 1 successors, FD is 5120
+         via Connected, GigabitEthernet6/0
+P 192.168.2.0/24, 1 successors, FD is 5376
+         via 10.0.0.2 (5376/5120), GigabitEthernet8/0
+P 192.168.3.0/24, 2 successors, FD is 5632
+         via 20.0.0.2 (5632/5376), GigabitEthernet7/0
+         via 10.0.0.2 (5632/5376), GigabitEthernet8/0
+P 192.168.4.0/24, 1 successors, FD is 5376
+         via 20.0.0.2 (5376/5120), GigabitEthernet7/0
+```
+
+Pour voir les routes :
+
+```
+R1#show ip eigrp topology
+IP-EIGRP Topology Table for AS 100/ID(192.168.1.1)
+
+Codes: P - Passive, A - Active, U - Update, Q - Query, R - Reply,
+       r - Reply status
+
+P 10.0.0.0/30, 1 successors, FD is 2816
+         via Connected, GigabitEthernet8/0
+P 20.0.0.0/30, 1 successors, FD is 2816
+         via Connected, GigabitEthernet7/0
+P 30.0.0.0/30, 1 successors, FD is 3072
+         via 10.0.0.2 (3072/2816), GigabitEthernet8/0
+P 40.0.0.0/30, 1 successors, FD is 3072
+         via 20.0.0.2 (3072/2816), GigabitEthernet7/0
+P 192.168.1.0/24, 1 successors, FD is 5120
+         via Connected, GigabitEthernet6/0
+P 192.168.2.0/24, 1 successors, FD is 5376
+         via 10.0.0.2 (5376/5120), GigabitEthernet8/0
+P 192.168.3.0/24, 2 successors, FD is 5632
+         via 20.0.0.2 (5632/5376), GigabitEthernet7/0
+         via 10.0.0.2 (5632/5376), GigabitEthernet8/0
+P 192.168.4.0/24, 1 successors, FD is 5376
+         via 20.0.0.2 (5376/5120), GigabitEthernet7/0
+```
+
+## ACL
+
+### Standard
+
+Les acls standard sont prévu pour agir le plus proche de la destination
+
+### Etendue
+
+Les acls étendues sont prévu pour agir le plus proche de la source
+
+Exemple:
+
+Dans le cas où il un pc qui est connecté à un routeur opposé à celui qui sort de la zone backbone, les routeurs entre les 2 ne sont pas autorisés à sortir alors il faudra procéder comme suit :
+
+1 Créer une ACL étendue:
+
+```
+R1(config)# ip access-list extended <name> 
+R1(config-ext-nacl)# permit ip host <ip client> any
+R1(config-ext-nacl)# deny ip any any
+```
+
+### REDISTRIBUTION
+
+La redistribution permet de partager les routes entre différents protocoles de routage, afin de permetttre la communication entre le routage OSPF et EIGRP par exemple. Avant de faire la redistribution des routes, il faut s'assurer que les protocoles de routage soient correctement configurés.
+
+Partage d'une route de EIGRP vers OSPF :
+
+```
+R1(config)# router ospf <AS number>
+R1(config-router)# redistribute eigrp <AS number> metric <METRIC OSPF> metric-type <OSPF/ISIS> 
+```
+
