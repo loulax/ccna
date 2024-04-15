@@ -209,12 +209,6 @@ O        10.10.3.0/30 [110/2] via 10.10.2.2, 00:04:29, GigabitEthernet0/0
                       [110/2] via 10.10.1.2, 00:04:29, GigabitEthernet0/1
 ```
 
-<u>PETIT RAPPEL SUR LE WILDCARD, ici le masque est en /24</u>
-
-![](img/wildcard.png)
-
-
-
 ## Protocole RIP
 
 BROADCAST ADDRESS : **224.0.0.9**
@@ -332,11 +326,40 @@ P 192.168.4.0/24, 1 successors, FD is 5376
          via 20.0.0.2 (5376/5120), GigabitEthernet7/0
 ```
 
-## ACL
+## ACL (Access Control List)
+
+Les ACL sont des mécanismes avancés permettant d'ajouter des contrôles d'accès en appliquant des règles de filtrage au niveau de l'entête IP. Elles peuvent filtrer un paquet au niveau de l'adresse IP source / destination et au niveau des protocoles de niveau 3/4. Elles sont aussi utilisées pour mettre en place des VPN, faire du NAT.
+
+1 ACL = 1 ou N ACE (Liste d'instructions lues par le routeur).
+
+ACE = Commande IOS commencant par access-list ou ip access-list.
+
+Il faut savoir qu'une ACL vide, bloquera par défaut tout le traffic.
+
+##### <u>PETIT RAPPEL SUR LE WILDCARD</u>
+
+La méthode rapide pour calculer un masque inversé, c'est de soustraire 255 par le masque de sous-réseau complet. Exemple pour un /21 le masque étant 255.255.248.0 ce qui donne : <u>**255.255.255.255 - 255.255.248.0 = 0.0.7.255**</u>.
+
+A savoir avant d'appliquer une ACL, il faut prendre en compte la règle des 3 P :
+
+- Une ACL par protocole (IPv4, IPv6)
+- une ACL par direction (Entrant ou Sortant)
+- Une ACL par interface (g0/1)
 
 ### Standard
 
 Les acls standard sont prévu pour agir le plus proche de la destination
+
+Voici comment les appliquer :
+
+```
+R1(config)# access-list 1 permit <network> <mask>
+R1(config)# access-list 1 permit host <ip>
+R1(config)# access-list 1 deny <network> <mask>
+R1(config)# access-list 1 deny any
+R1(config)# interface <number> (La plus proche de la destination)
+R1(config-if)# ip access-group 1 out
+```
 
 ### Etendue
 
@@ -349,10 +372,43 @@ Dans le cas où il un pc qui est connecté à un routeur opposé à celui qui so
 1 Créer une ACL étendue:
 
 ```
-R1(config)# ip access-list extended <name> 
-R1(config-ext-nacl)# permit ip host <ip client> any
-R1(config-ext-nacl)# deny ip any any
+R1(config)# ip access-list extended MON_ACL
+R1(config-ext-nacl)# access-list <number>
+R1(config-ext-nacl)# access-list <number> deny tcp <source ip> <mask> gt <source port> <destination ip> <mask ip destination> eq <destination port>
 ```
+
+### ACL Nommée
+
+Les ACL nommées sont applicables sur les ACL standards ou étendues. Elle se met en place grâce à la commande suivante :
+
+```
+R1(config)# ip access-list standard|extended <name>
+```
+
+Pour tout type d'ACL ou ACE, il est possible d'ajouter une ligne de commentaire permettant de mieux les carégoriser grâce à la command "remark":
+
+- ACL Numéroté
+
+```
+access-list 1 remark "réseau lab autorisé vers DMZ"
+```
+
+- ACL Nommé : Mode config ACL + remark
+
+```
+R1(config)# ip access-list standard OPEN_BAR
+R1(config-std-nacl)# remark reseau open-bar
+```
+
+### NAT/PAT
+
+Il existe 3 types de NAT:
+
+- Statique : un pour un
+- dynamique : pool d'ip publique disponibles
+- PAT / NAT  surchargé : Une ip publique partagée
+
+
 
 ### REDISTRIBUTION
 
